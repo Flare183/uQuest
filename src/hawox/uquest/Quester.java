@@ -21,14 +21,14 @@ import org.bukkit.entity.Player;
 
 public class Quester implements Serializable{
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3L;
 
 	//UQuest plugin;
-	
+
 	String theQuestersName;
-	
+
 	int questID;
 	int questsCompleted;
 	int moneyEarnedFromQuests;
@@ -36,18 +36,18 @@ public class Quester implements Serializable{
 	HashMap<String,Integer> questTracker = new HashMap<String,Integer>();
 	int questLevel;
 	int questsDropped;
-	
+
 	//int questsFailed; TODO for a later time.
-	
+
 	public Quester(String[] questerInfoInString, Player player) {
 		//this.plugin = plugin;
-		
+
 		this.theQuestersName = player.getName();
 		this.questID = Integer.parseInt(questerInfoInString[0]);
 		this.questsCompleted = Integer.parseInt(questerInfoInString[1]);
 		this.moneyEarnedFromQuests = Integer.parseInt(questerInfoInString[2]);
-		//this.questsFailed 
-		
+		//this.questsFailed
+
 		HashMap<String,Integer> tracker = new HashMap<String,Integer>();
 		try{
 			for(String info : questerInfoInString[3].split("~")){
@@ -60,22 +60,22 @@ public class Quester implements Serializable{
 		this.questTracker = tracker;
 		//defineQuestLevel();
 	}
-	
+
 	public boolean giveQuest(UQuest plugin, int questID, LoadedQuest quest){
 		this.setQuestID(questID);
-		
+
 		HashMap<String,Integer> tracker = new HashMap<String,Integer>();
 		for(Objective objective : quest.getObjectives()){
 			tracker.put(objective.getObjectiveName(), 0);
 		}
-		
+
 		this.setQuestTracker(tracker);
-		
+
 		//call event
 		plugin.getServer().getPluginManager().callEvent(new QuestGetEvent(plugin.getServer().getPlayer(this.theQuestersName), this, questID));
 		return true;
 	}
-	
+
 	public String toString(){
 		String stringToReturn;
 		//try{
@@ -85,7 +85,7 @@ public class Quester implements Serializable{
 		//}
 			return stringToReturn;
 	}
-	
+
 	public String toStringFromTracker(){
 		String returnMe = "";
 		try{
@@ -102,30 +102,30 @@ public class Quester implements Serializable{
 			returnMe = returnMe.substring(0, returnMe.length() - 1);
 		return returnMe;
 	}
-	
+
 	public void clearTracker(){
 		this.setQuestTracker(null);
 	}
-	
+
 	public boolean setTracker(String which, int toWhat){
-		
+
 		this.questTracker.remove(which);
 		this.questTracker.put(which, toWhat);
-		
+
 		return true;
 	}
-	
+
 	public int getTracker(UQuest plugin, String which){
 		try{
 			return this.questTracker.get(which);
 		}catch(NullPointerException npe){
-			
+
 			System.err.println(UQuest.pluginNameBracket() + " Quester:getTracker: Players tracker does not match their quest!");
 			System.err.println(UQuest.pluginNameBracket() + " This is most likely due to editing a quest a players has.");
 			System.err.println(UQuest.pluginNameBracket() + " Dropping their quest and giving it back to them to fix it.");
 			this.giveQuest(plugin,this.questID, plugin.getQuestersQuest(this));
 			return getTracker(plugin, which); //try again.
-			
+
 			/*
 			 * This is causing errors with an auto complete plugin.
 			 * The next tracker can run so fast that it will fire a few times before the quest can finish... well finishing itself.
@@ -133,14 +133,14 @@ public class Quester implements Serializable{
 			 */
 		}
 	}
-	
+
 	public boolean addToTracker(UQuest plugin, String which, int addWhat){
 		this.setTracker(which, addWhat + this.getTracker(plugin, which));
 		//call event
 		plugin.getServer().getPluginManager().callEvent(new TrackerAddEvent(plugin.getServer().getPlayer(this.theQuestersName), which, addWhat));
 		return true;
 	}
-	
+
 	public String arrayToString(String[] stringToChange, String withWhat) {
 		// take each part of the array and separate it with ':'s
 		String stringToReturn = stringToChange[0];
@@ -156,7 +156,7 @@ public class Quester implements Serializable{
 			return null;
 		}
 	}
-	
+
 	public void setQuestLevel(int questLevel) {
 		this.questLevel = questLevel;
 	}
@@ -192,7 +192,7 @@ public class Quester implements Serializable{
 	public void setTheQuestersName(String theQuestersName) {
 		this.theQuestersName = theQuestersName;
 	}
-	
+
 	public int getQuestLevel() {
 		return questLevel;
 	}
@@ -200,7 +200,7 @@ public class Quester implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
 	public void setQuestTracker(HashMap<String,Integer> questTracker){
 		this.questTracker = questTracker;
 	}
